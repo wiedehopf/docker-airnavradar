@@ -12,14 +12,6 @@ on:
         type: boolean
         description: "Use base image testpr"
         default: false
-  push:
-    branches:
-      - main
-    # Don't trigger if it's just a documentation update
-    paths:
-      - "rust/**"
-      - "Dockerfile**"
-      - "rootfs/**"
 
 # Set workflow-wide environment variables
 #  - REPO: repo name on dockerhub
@@ -56,23 +48,16 @@ jobs:
   build_and_push_latest:
     # this creates an image with the name of the repository, i.e. "docker-airnavradar"
     name: Image Build & Push
-    uses: sdr-enthusiasts/common-github-workflows/.github/workflows/build_and_push_image.yml@main
+    uses: sdr-enthusiasts/common-github-workflows/.github/workflows/sdre.yml@main
     needs: [hadolint]
     with:
       push_enabled: true
       push_destinations: ghcr.io
       ghcr_repo_owner: ${{ github.repository_owner }}
       ghcr_repo: ${{ github.repository }}
-      platform_linux_arm32v6_enabled: false
-      platform_linux_i386_enabled: false
-      get_version_method: file_in_container:file=/CONTAINER_VERSION
       # set build_latest to true if github.event.inputs.use_test_image is false
       build_latest: ${{ github.event.inputs.use_test_image == 'false' || github.event.inputs.use_test_image == ''  }}
       build_baseimage_test: ${{ github.event.inputs.use_test_image == 'true' }}
-      # only build the entire stack if we are not using the test image
-      build_version_specific: false
-      build_platform_specific: false
-      build_nohealthcheck: false
       build_baseimage_url: docker-baseimage:base/docker-baseimage:base-test-pr/g;s/docker-baseimage:qemu/docker-baseimage:qemu-test-pr
     secrets:
       ghcr_token: ${{ secrets.GITHUB_TOKEN }}
@@ -80,23 +65,16 @@ jobs:
   build_and_push_legacy:
     # this creates an image with the legacy repository name to ensure backward compatibility, i.e. "docker-radarbox"
     name: Image Build & Push
-    uses: sdr-enthusiasts/common-github-workflows/.github/workflows/build_and_push_image.yml@main
+    uses: sdr-enthusiasts/common-github-workflows/.github/workflows/sdre.yml@main
     needs: [hadolint]
     with:
       push_enabled: true
       push_destinations: ghcr.io
       ghcr_repo_owner: ${{ github.repository_owner }}
       ghcr_repo: ghcr.io/sdr-enthusiasts/docker-radarbox
-      platform_linux_arm32v6_enabled: false
-      platform_linux_i386_enabled: false
-      get_version_method: file_in_container:file=/CONTAINER_VERSION
       # set build_latest to true if github.event.inputs.use_test_image is false
       build_latest: ${{ github.event.inputs.use_test_image == 'false' || github.event.inputs.use_test_image == ''  }}
       build_baseimage_test: ${{ github.event.inputs.use_test_image == 'true' }}
-      # only build the entire stack if we are not using the test image
-      build_version_specific: false
-      build_platform_specific: false
-      build_nohealthcheck: false
       build_baseimage_url: docker-baseimage:base/docker-baseimage:base-test-pr/g;s/docker-baseimage:qemu/docker-baseimage:qemu-test-pr
     secrets:
       ghcr_token: ${{ secrets.GITHUB_TOKEN }}

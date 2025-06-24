@@ -44,82 +44,9 @@ jobs:
 
   test_build:
     name: Test Image Build
-    uses: sdr-enthusiasts/common-github-workflows/.github/workflows/build_and_push_image.yml@main
+    uses: sdr-enthusiasts/common-github-workflows/.github/workflows/sdre.yml@main
     needs: [hadolint]
     with:
       push_enabled: false
-      platform_linux_arm32v6_enabled: false
-      platform_linux_i386_enabled: false
-      build_version_specific: false
-      build_platform_specific: false
-      build_nohealthcheck: false
-      get_version_method: file_in_container:file=/CONTAINER_VERSION
-
-  # test_build:
-  #   name: Test Build
-  #   runs-on: ubuntu-22.04
-  #   needs: [shellcheck, hadolint]
-  #   strategy:
-  #     matrix:
-  #       docker-platform:
-  #         - linux/amd64
-  #         - linux/arm64
-  #         - linux/arm/v7
-  #         - linux/i386
-
-  #   steps:
-
-  #     # Check out our code
-  #     - name: Checkout
-  #       uses: actions/checkout@v4.2.2
-  #       with:
-  #         fetch-depth: 0
-
-  #     # List of files to check to trigger a rebuild on this job
-  #     - name: Get specific changed files
-  #       id: changed-files-specific
-  #       uses: tj-actions/changed-files@v35.6.1
-  #       with:
-  #         files: |
-  #           Dockerfile
-  #           rootfs
-  #           !*.md
-  #           !*.MD
-
-  #     # Set up QEMU for multi-arch builds
-  #     - name: Set up QEMU
-  #       if: steps.changed-files-specific.outputs.any_changed == 'true'
-  #       uses: docker/setup-qemu-action@v3.0.0
-
-  #     # Set up buildx for multi platform builds
-  #     - name: Set up Docker Buildx
-  #       if: steps.changed-files-specific.outputs.any_changed == 'true'
-  #       id: buildx
-  #       uses: docker/setup-buildx-action@v3.3.0
-
-  #     # Build
-  #     - name: Test Build
-  #       if: steps.changed-files-specific.outputs.any_changed == 'true'
-  #       uses: docker/build-push-action@v5.3.0
-  #       with:
-  #         context: .
-  #         file: ./Dockerfile
-  #         no-cache: true
-  #         platforms: ${{ matrix.docker-platform }}
-  #         push: false
-
-  #     # Patch dockerfile to remove healthcheck
-  #     - name: Patch Dockerfile to remove healthcheck
-  #       if: steps.changed-files-specific.outputs.any_changed == 'true'
-  #       run: sed '/^HEALTHCHECK /d' < Dockerfile > Dockerfile.nohealthcheck
-
-  #     # Build nohealthcheck
-  #     - name: Test Build nohealthcheck
-  #       if: steps.changed-files-specific.outputs.any_changed == 'true'
-  #       uses: docker/build-push-action@v5.3.0
-  #       with:
-  #         context: .
-  #         file: ./Dockerfile.nohealthcheck
-  #         no-cache: true
-  #         platforms: ${{ matrix.docker-platform }}
-  #         push: false
+      ghcr_repo_owner: ${{ github.repository_owner }}
+      ghcr_repo: ${{ github.repository }}
