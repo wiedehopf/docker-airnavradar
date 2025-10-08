@@ -114,6 +114,15 @@ if ! grep -qi "Serial\s*:" /proc/cpuinfo; then
   "${s6wrap[@]}" echo "Note: no cpu serial in /proc/cpuinfo (this should no longer cause issues but log it just in case)"
 fi
 
+if [[ ! -f /sys/class/thermal/thermal_zone0/temp ]]; then
+  # rbfeeder won't work without temperature sensor
+  "${s6wrap[@]}" echo ""
+  "${s6wrap[@]}" echo "[ERROR] Your machine doesn't have a temperature sensor at /sys/class/thermal/thermal_zone0/temp"
+  "${s6wrap[@]}" echo "        You must resolve this as rbfeeder will CRASH otherwise. Instruction to fix it can be found here:"
+  "${s6wrap[@]}" echo "        https://github.com/sdr-enthusiasts/docker-airnavradar/blob/main/version_0.4.3_workarounds.md#workaround-for-temperature-sensor"
+  sleep infinity
+fi
+
 if [[ -n "$RB_SERVER" ]]; then
 
   # Note, the default setting in rbfeeder is rpiserver-ng.rb24.com, which resolves to the 6 IP addresses below.
