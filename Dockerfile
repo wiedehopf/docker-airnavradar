@@ -21,7 +21,9 @@ RUN set -x && \
     else \
         RB24_PACKAGES=(rbfeeder); \
     fi && \
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 1D043681 && \
+    KEY_ID=1D043681 && \
+    gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY_ID" && \
+    gpg --armor --output /etc/apt/trusted.gpg.d/airnav-systems.asc --export "$KEY_ID" && \
     bash -c "echo 'deb https://apt.rb24.com/ bookworm main' > /etc/apt/sources.list.d/rb24.list" && \
     #
     # The lines below would allow the apt.rb24.com repo to be access insecurely. We were using this because their key had expired
