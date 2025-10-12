@@ -1,4 +1,4 @@
-FROM ghcr.io/sdr-enthusiasts/docker-baseimage:mlatclient AS downloader
+FROM ghcr.io/sdr-enthusiasts/docker-baseimage:trixie-mlatclient AS downloader
 
 # This downloader image has the rb24 apt repo added, and allows for downloading and extracting of rbfeeder binary deb package.
 ARG TARGETPLATFORM TARGETOS TARGETARCH
@@ -16,7 +16,7 @@ RUN set -x && \
     && \
     # add rb24 repo
     if [ "${TARGETARCH:0:3}" != "arm" ]; then \
-        dpkg --add-architecture armhf; \
+        dpkg --add-architecture armhf && \
         RB24_PACKAGES=(rbfeeder:armhf); \
     else \
         RB24_PACKAGES=(rbfeeder); \
@@ -32,10 +32,13 @@ RUN set -x && \
     # apt-get install -q -o Dpkg::Options::="--force-confnew" -y --no-install-recommends  --no-install-suggests --allow-unauthenticated \
     #         "${RB24_PACKAGES[@]}"; \
     apt-get update -q && \
-    apt-get install -q -o Dpkg::Options::="--force-confnew" -y --no-install-recommends  --no-install-suggests \
-            "${RB24_PACKAGES[@]}"
+    # apt-get install -q -o Dpkg::Options::="--force-confnew" -y --no-install-recommends  --no-install-suggests \
+    # instead of actually installing, just download and extract files as if we were installing it
+    # we only want the files in the deb placed in /, dependencies are not required
+    apt-get download "${RB24_PACKAGES[@]}" && \
+    dpkg --fsys-tarfile *.deb | tar -C / -x
 
-FROM ghcr.io/sdr-enthusiasts/docker-baseimage:wreadsb
+FROM ghcr.io/sdr-enthusiasts/docker-baseimage:trixie-wreadsb
 
 # This is the final image
 
@@ -66,8 +69,8 @@ RUN \
     if [ "${TARGETARCH:0:3}" != "arm" ]; then \
         dpkg --add-architecture armhf; \
         KEPT_PACKAGES+=(libc6:armhf) && \
-        KEPT_PACKAGES+=(libcurl4:armhf) && \
-        KEPT_PACKAGES+=(libglib2.0-0:armhf) && \
+        KEPT_PACKAGES+=(libcurl4t64:armhf) && \
+        KEPT_PACKAGES+=(libglib2.0-0t64:armhf) && \
         KEPT_PACKAGES+=(libjansson4:armhf) && \
         KEPT_PACKAGES+=(libprotobuf-c1:armhf) && \
         KEPT_PACKAGES+=(librtlsdr0:armhf) && \
@@ -75,8 +78,8 @@ RUN \
         KEPT_PACKAGES+=(qemu-user-static); \
     else \
         KEPT_PACKAGES+=(libc6) && \
-        KEPT_PACKAGES+=(libcurl4) && \
-        KEPT_PACKAGES+=(libglib2.0-0) && \
+        KEPT_PACKAGES+=(libcurl4t64) && \
+        KEPT_PACKAGES+=(libglib2.0-0t64) && \
         KEPT_PACKAGES+=(libjansson4) && \
         KEPT_PACKAGES+=(libprotobuf-c1) && \
         KEPT_PACKAGES+=(librtlsdr0); \
