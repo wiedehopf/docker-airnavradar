@@ -67,6 +67,8 @@ docker run \
  --name rbfeeder \
  -e TZ="YOURTIMEZONE" \
  -e BEASTHOST=YOURBEASTHOST \
+ -e MLAT_RESULTS_BEASTHOST=YOURBEASTHOST \
+ -e MLAT_RESULTS_BEASTPORT=30004 or 31004 or as appropriate \
  -e LAT=YOURLATITUDE \
  -e LONG=YOURLONGITUDE \
  -e ALT=YOURALTITUDE \
@@ -84,7 +86,9 @@ docker run \
  --rm \
  --name rbfeeder \
  -e TZ="Australia/Perth" \
- -e BEASTHOST=readsb \
+ -e BEASTHOST=ultrafeeder \
+ -e MLAT_RESULTS_BEASTHOST=ultrafeeder \
+ -e MLAT_RESULTS_BEASTPORT=31004 \
  -e LAT=-33.33333 \
  -e LONG=111.11111 \
  -e ALT=90 \
@@ -105,6 +109,8 @@ services:
     environment:
       - TZ=Australia/Perth
       - BEASTHOST=ultrafeeder
+      - MLAT_RESULTS_BEASTHOST=ultrafeeder
+      - MLAT_RESULTS_BEASTPORT=31004
       - LAT=-33.33333
       - LONG=111.11111
       - ALT=90
