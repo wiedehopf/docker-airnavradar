@@ -16,7 +16,7 @@ RUN set -x && \
     && \
     # add rb24 repo
     if [ "${TARGETARCH:0:3}" != "arm" ]; then \
-        dpkg --add-architecture armhf; \
+        dpkg --add-architecture armhf && \
         RB24_PACKAGES=(rbfeeder:armhf); \
     else \
         RB24_PACKAGES=(rbfeeder); \
@@ -30,8 +30,10 @@ RUN set -x && \
     # apt-get install -q -o Dpkg::Options::="--force-confnew" -y --no-install-recommends  --no-install-suggests --allow-unauthenticated \
     #         "${RB24_PACKAGES[@]}"; \
     apt-get update -q && \
-    apt-get install -q -o Dpkg::Options::="--force-confnew" -y --no-install-recommends  --no-install-suggests \
-            "${RB24_PACKAGES[@]}"
+    # instead of actually installing, just download and extract files as if we were installing it
+    # we only want the files in the deb placed in /, dependencies are not required
+    apt-get download "${RB24_PACKAGES[@]}" && \
+        dpkg --fsys-tarfile *.deb | tar -C / -x
 
 FROM ghcr.io/sdr-enthusiasts/docker-baseimage:wreadsb
 
