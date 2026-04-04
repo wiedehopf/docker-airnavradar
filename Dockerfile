@@ -23,8 +23,8 @@ RUN set -x && \
     RB24_PACKAGES=(rbfeeder); \
     fi && \
     gpg --keyserver keyserver.ubuntu.com --recv-keys 1D043681  && \
-    gpg --export --armor 1D043681 | gpg --dearmor -o /etc/apt/keyrings/flightradar24.gpg   && \
-    echo "deb [signed-by=/etc/apt/keyrings/flightradar24.gpg] https://apt.rb24.com/ bookworm main" | tee /etc/apt/sources.list.d/fr24feed.list  && \
+    gpg --export --armor 1D043681 | gpg --dearmor -o /etc/apt/keyrings/rb24.gpg   && \
+    echo "deb [signed-by=/etc/apt/keyrings/rb24.gpg] https://apt.rb24.com/ bookworm main" | tee /etc/apt/sources.list.d/rb24.list  && \
     #
     # The lines below would allow the apt.rb24.com repo to be access insecurely. We were using this because their key had expired
     # However, as of 1-feb-2024, the repo was updated to contain again a valid key so this is no longer needed. Leaving it in as an archifact for future reference.
